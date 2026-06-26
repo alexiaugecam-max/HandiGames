@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handi'Games — Salle Trouble dys</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1530;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px;
+    color: #e8e0f0;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #c8b8e8;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #8877aa;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .game-area {
+    position: relative;
+    width: 100%;
+    max-width: 860px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #3a2a5a;
+    background: #f5f0e8;
+    user-select: none;
+  }
+
+  /* Couche texte chaos (visible par défaut) */
+  .chaos-layer {
+    width: 100%;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* Couche texte lisible (cachée, révélée par le masque) */
+  .readable-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #f5f0e8;
+    clip-path: inset(0 0 100% 0); /* caché par défaut */
+    pointer-events: none;
+    transition: none;
+  }
+
+  .readable-canvas {
+    width: 100%;
+    display: block;
+  }
+
+  /* Le cache lumineux (fenêtre de lecture) */
+  .reading-window {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 56px;
+    pointer-events: none;
+    border-top: 2px solid #7755cc;
+    border-bottom: 2px solid #7755cc;
+    background: rgba(180, 160, 255, 0.08);
+    box-shadow: 0 0 24px 4px rgba(140, 100, 255, 0.18);
+    transition: top 0.18s cubic-bezier(.4,0,.2,1);
+    display: none;
+  }
+
+  /* Overlay masque : masque tout sauf la fenêtre */
+  .mask-top, .mask-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background: rgba(245, 240, 232, 0.92);
+    pointer-events: none;
+    display: none;
+    transition: none;
+  }
+
+  /* Contrôles */
+  .controls {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 9px 22px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: #5533aa;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #6644cc; }
+  .btn-primary.active {
+    background: #2a1a66;
+    box-shadow: 0 0 0 2px #7755cc;
+  }
+  .btn-secondary {
+    background: #2a2040;
+    color: #c8b8e8;
+    border: 1px solid #3a2a5a;
+  }
+  .btn-secondary:hover { background: #3a2a5a; }
+
+  .nav-btns {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .nav-btn {
+    padding: 7px 16px;
+    border-radius: 16px;
+    border: 1px solid #4a3a6a;
+    background: #2a2040;
+    color: #c8b8e8;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: #3a2a5a; }
+  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+
+  .line-indicator {
+    font-size: 13px;
+    color: #8877aa;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .hint-box {
+    margin-top: 14px;
+    background: #2a2040;
+    border: 1px solid #3a2a5a;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #9988bb;
+    max-width: 860px;
+    width: 100%;
+    text-align: center;
+    display: none;
+  }
+  .hint-box.visible { display: block; }
+
+  .reveal-box {
+    margin-top: 14px;
+    background: #1a3a22;
+    border: 1px solid #3a6a44;
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 15px;
+    color: #88e8aa;
+    max-width: 860px;
+    width: 100%;
+    text-align: center;
+    display: none;
+  }
+  .reveal-box.visible { display: block; }
+  .reveal-letter {
+    font-size: 48px;
+    font-weight: 700;
+    color: #55dd88;
+    display: block;
+    margin: 8px 0 4px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Dans la peau de Léa</h1>
+<p class="subtitle">Impossible à lire ? Activez l'aide à la lecture pour découvrir le texte — et la lettre cachée.</p>
+
+<div class="game-area" id="gameArea">
+  <!-- Texte chaos (image) -->
+  <canvas id="chaosCanvas" class="chaos-layer"></canvas>
+  <!-- Texte lisible (canvas, révélé par clip) -->
+  <canvas id="readableCanvas" class="readable-canvas" style="position:absolute;top:0;left:0;width:100%;"></canvas>
+  <!-- Masques -->
+  <div class="mask-top" id="maskTop"></div>
+  <div class="mask-bottom" id="maskBottom"></div>
+  <!-- Fenêtre de lecture -->
+  <div class="reading-window" id="readingWindow"></div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-primary" id="btnAide" onclick="toggleAide()">🔍 Activer l'aide à la lecture</button>
+  <div class="nav-btns">
+    <button class="nav-btn" id="btnUp" onclick="moveLine(-1)" disabled>▲ Ligne précédente</button>
+    <span class="line-indicator" id="lineIndicator"></span>
+    <button class="nav-btn" id="btnDown" onclick="moveLine(1)" disabled>Ligne suivante ▼</button>
+  </div>
+  <button class="btn btn-secondary" onclick="toggleHint()">💡 Indice</button>
+</div>
+
+<div class="hint-box" id="hintBox">
+  Lisez ligne par ligne. La dernière ligne contient la réponse à noter sur votre feuille.
+</div>
+
+<div class="reveal-box" id="revealBox">
+  Bravo ! Vous avez lu le texte avec l'aide à la lecture.<br>
+  La lettre du mot mystère est :
+  <span class="reveal-letter">R</span>
+  Notez-la et retournez au tableau.
+</div>
+
+<script>
+// ── Texte lisible ligne par ligne ────────────────────────────────────────────
+const LINES = [
+  "Chaque matin, Sophie prend le bus",
+  "pour rejoindre son lieu de travail.",
+  "Elle prépare ses dossiers, répond",
+  "aux mails et participe aux réunions.",
+  "Avoir un emploi stable lui permet",
+  "d'être autonome et de progresser.",
+  "La première lettre du mot mystère est :",
+  "R",
+];
+
+const LINE_H = 56;
+const MARGIN_TOP = 52;
+const MARGIN_LEFT = 50;
+const CANVAS_H = MARGIN_TOP + LINES.length * LINE_H + 40;
+const CANVAS_W = 960;
+
+// ── Texte chaos ───────────────────────────────────────────────────────────────
+const MIRROR = {b:'d',d:'b',p:'q',q:'p',n:'u',u:'n'};
+const SIMILAR = {a:'o',o:'a',e:'c',c:'e',f:'t',t:'f',h:'n',r:'v',l:'i',m:'nn',s:'z',g:'q'};
+
+function chaosChar(ch) {
+  const r = Math.random();
+  const low = ch.toLowerCase();
+  if (r < 0.55 && MIRROR[low]) return ch === ch.toUpperCase() ? MIRROR[low].toUpperCase() : MIRROR[low];
+  if (r < 0.75 && SIMILAR[low]) return ch === ch.toUpperCase() ? SIMILAR[low].toUpperCase() : SIMILAR[low];
+  if (r < 0.83) return ch + ch; // double
+  return ch;
+}
+
+function chaosWord(word) {
+  if (word === 'R') return 'R';
+  let out = '';
+  for (let i = 0; i < word.length; i++) {
+    const r = Math.random();
+    if (r < 0.78) out += chaosChar(word[i]);
+    else out += word[i];
+  }
+  return out;
+}
+
+// Seed-like: on fixe le chaos au chargement
+const chaosLines = LINES.map(line => {
+  if (line === 'R') return ['R'];
+  return line.split(' ').map(w => chaosWord(w));
+});
+
+// ── Init canvas ───────────────────────────────────────────────────────────────
+const gameArea = document.getElementById('gameArea');
+const chaosCanvas = document.getElementById('chaosCanvas');
+const readableCanvas = document.getElementById('readableCanvas');
+const ctxC = chaosCanvas.getContext('2d');
+const ctxR = readableCanvas.getContext('2d');
+
+function setCanvasSize(canvas) {
+  canvas.width = CANVAS_W;
+  canvas.height = CANVAS_H;
+  canvas.style.height = (CANVAS_H * canvas.offsetWidth / CANVAS_W) + 'px';
+}
+
+function drawChaos() {
+  ctxC.fillStyle = '#f5f0e8';
+  ctxC.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+  // Titre
+  ctxC.fillStyle = '#2d1f5e';
+  ctxC.font = 'bold 20px Liberation Sans, Arial';
+  ctxC.textAlign = 'center';
+  ctxC.fillText('Tel que Léa le perçoit…', CANVAS_W/2, 32);
+
+  // Ligne
+  ctxC.strokeStyle = '#c8b8d8';
+  ctxC.lineWidth = 1;
+  ctxC.beginPath();
+  ctxC.moveTo(50, 48); ctxC.lineTo(CANVAS_W-50, 48);
+  ctxC.stroke();
+
+  ctxC.textAlign = 'left';
+
+  chaosLines.forEach((words, li) => {
+    const y = MARGIN_TOP + li * LINE_H;
+    if (words[0] === 'R') {
+      // R grand centré + bruit
+      ctxC.font = 'bold 52px Liberation Sans, Arial';
+      ctxC.fillStyle = '#1a3a7a';
+      ctxC.textAlign = 'center';
+      ctxC.fillText('R', CANVAS_W/2, y + 50);
+      ctxC.font = '22px Liberation Sans, Arial';
+      ctxC.textAlign = 'left';
+      for (let n = 0; n < 20; n++) {
+        const nx = (CANVAS_W/2 - 140) + Math.random()*280;
+        if (Math.abs(nx - CANVAS_W/2) < 40) continue;
+        const ny = y + Math.random()*60;
+        const g = 150 + Math.random()*60 | 0;
+        ctxC.fillStyle = `rgb(${g},${g-5},${g+10})`;
+        const nch = 'bdpqunaeofth'[Math.random()*12|0];
+        ctxC.fillText(nch, nx, ny);
+      }
+    } else {
+      let x = MARGIN_LEFT;
+      ctxC.font = '26px Liberation Sans, Arial';
+      words.forEach(w => {
+        const jitter = (Math.random()*12-6)|0;
+        const g = (15 + Math.random()*40)|0;
+        ctxC.fillStyle = `rgb(${g},${g+4},${g+12})`;
+        ctxC.fillText(w, x, y + 36 + jitter);
+        const m = ctxC.measureText(w);
+        x += m.width + (4 + Math.random()*18)|0;
+      });
+    }
+  });
+
+  // Bas de page
+  ctxC.font = '13px Liberation Sans, Arial';
+  ctxC.fillStyle = '#9977aa';
+  ctxC.textAlign = 'center';
+  ctxC.fillText("Handi'Games · Salle Trouble dys  —  Impossible à lire ? Utilisez l'aide à la lecture.",
+    CANVAS_W/2, CANVAS_H - 14);
+}
+
+function drawReadable() {
+  ctxR.clearRect(0, 0, CANVAS_W, CANVAS_H);
+  ctxR.fillStyle = '#f5f0e8';
+  ctxR.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+  // Même titre
+  ctxR.fillStyle = '#2d1f5e';
+  ctxR.font = 'bold 20px Liberation Sans, Arial';
+  ctxR.textAlign = 'center';
+  ctxR.fillText('Tel que Léa le perçoit…', CANVAS_W/2, 32);
+  ctxR.strokeStyle = '#c8b8d8';
+  ctxR.lineWidth = 1;
+  ctxR.beginPath();
+  ctxR.moveTo(50, 48); ctxR.lineTo(CANVAS_W-50, 48);
+  ctxR.stroke();
+
+  LINES.forEach((line, li) => {
+    const y = MARGIN_TOP + li * LINE_H;
+    if (line === 'R') {
+      ctxR.font = 'bold 52px Liberation Sans, Arial';
+      ctxR.fillStyle = '#1a3a7a';
+      ctxR.textAlign = 'center';
+      ctxR.fillText('R', CANVAS_W/2, y + 50);
+    } else {
+      ctxR.font = '26px Liberation Sans, Arial';
+      ctxR.fillStyle = '#1a1040';
+      ctxR.textAlign = 'left';
+      ctxR.fillText(line, MARGIN_LEFT, y + 36);
+    }
+  });
+
+  ctxR.font = '13px Liberation Sans, Arial';
+  ctxR.fillStyle = '#9977aa';
+  ctxR.textAlign = 'center';
+  ctxR.fillText("Handi'Games · Salle Trouble dys  —  Impossible à lire ? Utilisez l'aide à la lecture.",
+    CANVAS_W/2, CANVAS_H - 14);
+}
+
+// ── État ──────────────────────────────────────────────────────────────────────
+let aideActive = false;
+let currentLine = 0;
+
+function getScaleFactor() {
+  return chaosCanvas.offsetWidth / CANVAS_W;
+}
+
+function getLineY(li) {
+  return (MARGIN_TOP + li * LINE_H) * getScaleFactor();
+}
+
+function getWindowH() {
+  return LINE_H * getScaleFactor();
+}
+
+function updateReadableClip() {
+  const ly = getLineY(currentLine);
+  const wh = getWindowH();
+  readableCanvas.style.clipPath = `inset(${ly}px 0 ${chaosCanvas.offsetHeight - ly - wh}px 0)`;
+  readableCanvas.style.webkitClipPath = readableCanvas.style.clipPath;
+}
+
+function updateMasks() {
+  const ly = getLineY(currentLine);
+  const wh = getWindowH();
+  const maskTop = document.getElementById('maskTop');
+  const maskBottom = document.getElementById('maskBottom');
+  const rw = document.getElementById('readingWindow');
+
+  maskTop.style.top = '0';
+  maskTop.style.height = ly + 'px';
+
+  maskBottom.style.top = (ly + wh) + 'px';
+  maskBottom.style.height = (chaosCanvas.offsetHeight - ly - wh) + 'px';
+
+  rw.style.top = ly + 'px';
+  rw.style.height = wh + 'px';
+}
+
+function updateIndicator() {
+  document.getElementById('lineIndicator').textContent = `Ligne ${currentLine+1} / ${LINES.length}`;
+  document.getElementById('btnUp').disabled = currentLine === 0;
+  document.getElementById('btnDown').disabled = currentLine === LINES.length - 1;
+  if (currentLine === LINES.length - 1) {
+    document.getElementById('revealBox').classList.add('visible');
+  }
+}
+
+function toggleAide() {
+  aideActive = !aideActive;
+  const btn = document.getElementById('btnAide');
+  const rw = document.getElementById('readingWindow');
+  const mt = document.getElementById('maskTop');
+  const mb = document.getElementById('maskBottom');
+
+  if (aideActive) {
+    btn.textContent = '✕ Désactiver l\'aide';
+    btn.classList.add('active');
+    rw.style.display = 'block';
+    mt.style.display = 'block';
+    mb.style.display = 'block';
+    document.getElementById('btnUp').disabled = currentLine === 0;
+    document.getElementById('btnDown').disabled = false;
+    updateReadableClip();
+    updateMasks();
+    updateIndicator();
+  } else {
+    btn.textContent = '🔍 Activer l\'aide à la lecture';
+    btn.classList.remove('active');
+    rw.style.display = 'none';
+    mt.style.display = 'none';
+    mb.style.display = 'none';
+    readableCanvas.style.clipPath = 'inset(0 0 100% 0)';
+    document.getElementById('btnUp').disabled = true;
+    document.getElementById('btnDown').disabled = true;
+    document.getElementById('lineIndicator').textContent = '';
+  }
+}
+
+function moveLine(dir) {
+  currentLine = Math.max(0, Math.min(LINES.length-1, currentLine + dir));
+  updateReadableClip();
+  updateMasks();
+  updateIndicator();
+}
+
+function toggleHint() {
+  document.getElementById('hintBox').classList.toggle('visible');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  setCanvasSize(chaosCanvas);
+  setCanvasSize(readableCanvas);
+  drawChaos();
+  drawReadable();
+  readableCanvas.style.clipPath = 'inset(0 0 100% 0)';
+});
+
+window.addEventListener('resize', () => {
+  setCanvasSize(chaosCanvas);
+  setCanvasSize(readableCanvas);
+  chaosCanvas.style.height = '';
+  readableCanvas.style.height = '';
+  if (aideActive) {
+    updateReadableClip();
+    updateMasks();
+  }
+});
+</script>
+
+</body>
+</html>
