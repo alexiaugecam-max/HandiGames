@@ -168,6 +168,24 @@
   }
   .hint-box.visible { display: block; }
 
+  .aide-explication {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #2a2040;
+    border: 1px solid #4a3a6a;
+    border-left: 4px solid #7755cc;
+    border-radius: 10px;
+    padding: 14px 18px;
+    max-width: 860px;
+    width: 100%;
+    margin-bottom: 14px;
+  }
+  .aide-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+  .aide-texte { font-size: 13px; color: #b8a8d8; line-height: 1.6; }
+  .aide-texte strong { color: #c8b8e8; font-size: 14px; }
+  .aide-action { color: #9988bb; font-style: italic; display: block; margin-top: 6px; }
+
   .reveal-box {
     margin-top: 14px;
     background: #1a3a22;
@@ -208,6 +226,14 @@
   <div class="reading-window" id="readingWindow"></div>
 </div>
 
+<div class="aide-explication" id="aideExplication">
+  <div class="aide-icon">📄</div>
+  <div class="aide-texte">
+    <strong>L'aide à la lecture</strong> est un cache percé d'une fenêtre étroite qui ne laisse visible qu'une seule ligne à la fois. Cet outil simple permet aux personnes dyslexiques de ne pas être perturbées par le texte environnant et de lire ligne par ligne.
+    <br><span class="aide-action">→ Activez-la ci-dessous pour lire le texte.</span>
+  </div>
+</div>
+
 <div class="controls">
   <button class="btn btn-primary" id="btnAide" onclick="toggleAide()">🔍 Activer l'aide à la lecture</button>
   <div class="nav-btns">
@@ -219,7 +245,7 @@
 </div>
 
 <div class="hint-box" id="hintBox">
-  Lisez ligne par ligne. La dernière ligne contient la réponse à noter sur votre feuille.
+  Lisez ligne par ligne jusqu'à la dernière. La réponse s'affichera automatiquement.
 </div>
 
 <div class="reveal-box" id="revealBox">
@@ -313,21 +339,19 @@ function drawChaos() {
   chaosLines.forEach((words, li) => {
     const y = MARGIN_TOP + li * LINE_H;
     if (words[0] === 'R') {
-      // R grand centré + bruit
-      ctxC.font = 'bold 52px Liberation Sans, Arial';
-      ctxC.fillStyle = '#1a3a7a';
-      ctxC.textAlign = 'center';
-      ctxC.fillText('R', CANVAS_W/2, y + 50);
-      ctxC.font = '22px Liberation Sans, Arial';
+      // Dernière ligne : chaos dense, le R est complètement noyé
+      ctxC.font = '26px Liberation Sans, Arial';
       ctxC.textAlign = 'left';
-      for (let n = 0; n < 20; n++) {
-        const nx = (CANVAS_W/2 - 140) + Math.random()*280;
-        if (Math.abs(nx - CANVAS_W/2) < 40) continue;
-        const ny = y + Math.random()*60;
-        const g = 150 + Math.random()*60 | 0;
-        ctxC.fillStyle = `rgb(${g},${g-5},${g+10})`;
-        const nch = 'bdpqunaeofth'[Math.random()*12|0];
-        ctxC.fillText(nch, nx, ny);
+      const noiseChars = 'bdpqunaeofthrlszmwvgjkcx??!!%%&&##@@~~^^';
+      let nx = 50;
+      while (nx < CANVAS_W - 50) {
+        const nch = noiseChars[Math.random() * noiseChars.length | 0];
+        const g = (15 + Math.random() * 45) | 0;
+        ctxC.fillStyle = `rgb(${g},${g+4},${g+12})`;
+        const jitter = (Math.random() * 14 - 7) | 0;
+        ctxC.fillText(nch, nx, y + 36 + jitter);
+        const m = ctxC.measureText(nch);
+        nx += m.width + (Math.random() * 14 + 2) | 0;
       }
     } else {
       let x = MARGIN_LEFT;
