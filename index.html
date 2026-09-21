@@ -509,6 +509,28 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
 }
 .cert-form button:hover{ background:var(--accent-violet-strong); }
 
+/* ---------- CONSIGNE JOUEUR ---------- */
+.consigne{
+  display:flex; gap:1rem; align-items:flex-start; margin-bottom:1.1rem;
+  background:var(--surface-card); border:3px solid var(--accent-sun-pop); border-radius:var(--radius-lg);
+  padding:1.2rem 1.3rem; box-shadow:4px 5px 0 var(--surface-border);
+}
+.consigne-ico{
+  width:48px; height:48px; border-radius:15px; flex-shrink:0; color:#2B2440;
+  background:var(--accent-sun-pop); display:flex; align-items:center; justify-content:center;
+  transform:rotate(-4deg);
+}
+.consigne-ico .ico-svg{ width:26px; height:26px; }
+.consigne-body strong{ font-family:var(--font-display); font-size:1.1em; display:block; margin-bottom:0.3rem; }
+.consigne-body p{ font-weight:600; font-size:0.95em; line-height:1.5; color:var(--text-secondary); margin-bottom:0.9rem; }
+.consigne-btn{
+  display:inline-flex; align-items:center; gap:0.4rem; cursor:pointer;
+  background:var(--accent-teal); color:var(--text-on-accent); border:none; border-radius:12px;
+  padding:0.65rem 1.1rem; font-family:var(--font-display); font-weight:700; font-size:0.95em;
+}
+.consigne-btn:hover{ background:var(--accent-teal-strong); }
+@media (max-width:600px){ .consigne{ flex-direction:column; } }
+
 /* ---------- QR UNIQUE + ÉTAPES ---------- */
 .qr-frame{
   width:196px; margin:0 auto 0.8rem; padding:10px; border-radius:26px;
@@ -978,7 +1000,7 @@ const agendaPlan = [
 
 /* ===================== ÉTAT ===================== */
 
-let state = { mode:'player', screen:'entry', current:0, qIndex:0, done:{}, progress:{}, prenom:'' };
+let state = { mode:'player', screen:'entry', current:0, qIndex:0, done:{}, progress:{}, prenom:'', consigneSeen:false };
 let history = [];
 let timer = { seconds:3600, running:false, interval:null };
 let prefs = { font:'default', size:'medium', theme:'light', voiceOn:false };
@@ -1295,7 +1317,18 @@ function renderStation(i, qIdx){
     `;
   }
 
+  const consigneHtml = state.consigneSeen ? '' : `
+    <div class="consigne" id="consigne" role="region" aria-label="Consigne du jeu">
+      <div class="consigne-ico" aria-hidden="true">${icon('bulb')}</div>
+      <div class="consigne-body">
+        <strong>Consigne</strong>
+        <p>Lis la question, choisis ta réponse, puis lis l'explication : chaque réponse t'apprend un droit. Il n'y a pas de note et tu avances à ton rythme. Utilise « Question suivante » pour continuer, ou « Question précédente » pour revenir en arrière.</p>
+        <button type="button" class="consigne-btn" onclick="dismissConsigne()">${icon('check')} J'ai compris</button>
+      </div>
+    </div>`;
+
   return `
+    ${consigneHtml}
     ${globalProgressHtml()}
     <div class="chapter-bar">${chapterChipsHtml(i)}</div>
     <div class="route-strip" role="img" aria-label="Progression : station ${i+1} sur ${stations.length}">${routeStripHtml(i)}</div>
@@ -1321,6 +1354,14 @@ function renderStation(i, qIdx){
       </div>
     </div>
   `;
+}
+
+function dismissConsigne(){
+  state.consigneSeen = true;
+  const el = document.getElementById('consigne');
+  if(el) el.remove();
+  const t = document.getElementById('station-title');
+  if(t) t.focus();
 }
 
 function nextLabel(i, qIdx){
@@ -1597,7 +1638,7 @@ function downloadRecap(){
 function restart(){
   history = [];
   updateBackButton();
-  state = { mode:'player', screen:'entry', current:0, qIndex:0, done:{}, progress:{}, prenom:'' };
+  state = { mode:'player', screen:'entry', current:0, qIndex:0, done:{}, progress:{}, prenom:'', consigneSeen:false };
   facUnlocked = false;
   render(false);
 }
