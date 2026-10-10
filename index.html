@@ -952,7 +952,7 @@ const stations = [
     categorie:"Définir le handicap",
     questions:[
       { format:"qcm", question:"Nora a un ami qui lui dit : 'Sans certificat médical, ce n'est pas un vrai handicap.' Selon la loi française, qu'est-ce qui définit vraiment un handicap ?",
-        options:["Une maladie diagnostiquée par un médecin uniquement","Une limitation d'activité ou de participation à la vie sociale due à une altération durable", "Une carte délivrée à la naissance"], correct:1,
+        options:["Une maladie diagnostiquée par un médecin uniquement","Une limitation d'activité ou de participation à la vie sociale due à un problème de santé durable", "Une carte délivrée à la naissance"], correct:1,
         explication:"Le handicap se définit par son impact sur la participation sociale, pas par un diagnostic en soi.",
         droit:"Deux personnes avec le même diagnostic peuvent avoir des besoins de reconnaissance très différents selon l'impact réel sur leur vie." },
       { format:"situation", question:"Lina a un trouble dys qui la fatigue beaucoup à la lecture, mais elle a de bonnes notes. Penses-tu qu'elle a quand même le droit de demander un aménagement ?",
@@ -969,9 +969,9 @@ const stations = [
         options:["18 ans","16 ans","Il n'y a pas d'âge minimum, c'est possible dès la majorité légale de raisonnement"], correct:1,
         explication:"La demande de RQTH est possible dès 16 ans, en lien avec l'entrée progressive dans la vie professionnelle ou les études supérieures.",
         droit:"Tu peux anticiper la démarche avant même d'avoir besoin de l'activer concrètement." },
-      { format:"debat", question:"Certain·es jeunes pensent que demander la RQTH trop tôt, c'est s'enfermer dans une étiquette pour la vie. Et toi, qu'en penses-tu ?",
+      { format:"debat", question:"Certain·es jeunes pensent que demander la RQTH trop tôt, c'est s'enfermer dans une case pour la vie. Et toi, qu'en penses-tu ?",
         prompt:"Discutez 2 minutes en équipe : qu'est-ce qui vous semble vrai ou faux dans cette affirmation ?",
-        explication:"La RQTH est attribuée pour une durée limitée (en général 1 à 10 ans), renouvelable ou non. Ce n'est pas une étiquette permanente, mais un statut administratif réversible.",
+        explication:"La RQTH est attribuée pour une durée limitée (en général 1 à 10 ans), renouvelable ou non. Ce n'est pas une case permanente, mais un statut administratif réversible.",
         droit:"Tu gardes le contrôle : tu peux ne pas renouveler, ne jamais l'utiliser auprès d'un employeur, ou l'activer seulement quand tu en as besoin." }
     ]
   },
@@ -984,8 +984,8 @@ const stations = [
         explication:"La santé mentale fait partie intégrante de la santé reconnue par la RQTH.",
         droit:"Si un trouble de santé mentale affecte durablement tes études, ton travail ou ta vie privée, tu peux légitimement explorer cette piste, sans honte." },
       { format:"situation", question:"Karim vit avec un trouble bipolaire stabilisé par un traitement. Il hésite à en parler à son centre de formation, par peur d'être jugé. À ton avis, que peut-il faire ?",
-        options:["Rien, il doit gérer ça seul pour éviter d'être jugé","Il peut solliciter le service de santé étudiant ou la mission handicap de son établissement, en toute confidentialité"], correct:1,
-        explication:"Les missions handicap des établissements sont précisément là pour accompagner ce type de situation sans jugement.",
+        options:["Rien, il doit gérer ça seul pour éviter d'être jugé","Il peut solliciter le service de santé étudiant ou le référent handicap de son établissement, en toute confidentialité"], correct:1,
+        explication:"Les référents handicap des établissements sont précisément là pour accompagner ce type de situation sans jugement.",
         droit:"Le secret médical s'applique aussi en milieu scolaire : un établissement ne peut pas exiger de connaître le détail du diagnostic." }
     ]
   },
@@ -1000,7 +1000,7 @@ const stations = [
       { format:"vf", question:"Sami a mentionné sa RQTH lors d'un entretien et n'a pas eu le poste. Un recruteur a-t-il le droit de refuser d'embaucher quelqu'un uniquement pour cette raison ? Vrai ou faux ?",
         options:["Vrai","Faux"], correct:1,
         explication:"Faux. C'est une discrimination interdite par la loi, sur le même principe que l'origine ou le sexe.",
-        droit:"Si tu penses avoir vécu une discrimination liée au handicap, tu peux saisir le Défenseur des droits." }
+        droit:"Si tu penses avoir vécu une discrimination liée au handicap, tu peux saisir le Défenseur des droits, une autorité indépendante qui t'aide gratuitement." }
     ]
   },
   {
@@ -1008,12 +1008,12 @@ const stations = [
     categorie:"Aménagements scolaires",
     questions:[
       { format:"qcm", question:"Chloé a besoin d'un tiers-temps pour ses examens. Comment peut-elle obtenir ce type d'aménagement, au lycée, dans le supérieur ou en formation ?",
-        options:["Un mot des parents","Un avis médical via la MDPH ou le médecin scolaire, formalisé dans un dossier d'aménagement", "Aucun document n'est nécessaire"], correct:1,
+        options:["Un mot des parents","Un avis médical via la MDPH (Maison Départementale des Personnes Handicapées) ou le médecin scolaire, formalisé dans un dossier d'aménagement", "Aucun document n'est nécessaire"], correct:1,
         explication:"Les aménagements d'examens s'obtiennent via une procédure officielle, généralement instruite par un médecin désigné par la MDPH. C'est la même logique en formation : le centre de formation ou l'organisme certificateur s'appuie sur cet avis médical pour mettre en place les aménagements.",
         droit:"Tu peux demander ces aménagements même sans avoir la RQTH : ce sont deux démarches distinctes mais complémentaires. Cela vaut aussi pour une formation (alternance, formation professionnelle) : parle-en au référent handicap de ton centre de formation." },
       { format:"situation", question:"Yasmine entre en BTS et a besoin d'un ordinateur adapté pour prendre des notes. Selon toi, vers qui se tourner en priorité ?",
-        options:["Le secrétariat général uniquement","La mission ou le référent handicap de l'établissement"], correct:1,
-        explication:"Chaque lycée et établissement du supérieur dispose en général d'un référent ou d'une mission handicap dédiée.",
+        options:["Le secrétariat général uniquement","Le référent handicap de l'établissement"], correct:1,
+        explication:"Chaque lycée, CFA, établissement du supérieur, école de la 2ᵉ chance ou association d'insertion dispose en général d'un référent handicap dédié. Si tu es en décrochage scolaire ou que tu n'es plus en formation, la Mission locale ou Cap emploi peuvent aussi t'orienter vers les bons interlocuteurs.",
         droit:"Ce service existe justement pour faire le lien entre les besoins de l'étudiant·e et les aménagements possibles, gratuitement." }
     ]
   },
@@ -1038,7 +1038,7 @@ const stations = [
       { format:"qcm", question:"Nora a entendu parler de l'AAH sans trop savoir ce que c'est. Que signifie cet acronyme ?",
         options:["Aide à l'Autonomie des Handicapés","Allocation aux Adultes Handicapés","Assurance Annuelle Handicap"], correct:1,
         explication:"L'AAH (Allocation aux Adultes Handicapés) est une aide financière versée sous conditions de ressources et de taux d'incapacité.",
-        droit:"L'AAH est accessible dès 20 ans (ou 16 ans si tu n'es plus à la charge de tes parents), sous conditions définies par la MDPH." },
+        droit:"L'AAH est accessible dès 20 ans (ou 16 ans si tu n'es plus à la charge de tes parents), sous conditions définies par la MDPH (Maison Départementale des Personnes Handicapées)." },
       { format:"qcm", question:"Lucas a besoin d'un fauteuil adapté et d'une aide à domicile. Quelle aide peut financer tout ça ?",
         options:["La Prestation de Compensation du Handicap","La Prime d'Activité","La Bourse au mérite"], correct:0,
         explication:"La PCH finance des aides techniques, humaines ou liées à l'aménagement du logement ou du véhicule.",
@@ -1052,7 +1052,7 @@ const stations = [
       { format:"situation", question:"Adam touche déjà une bourse sur critères sociaux. Penses-tu qu'il a aussi le droit de demander des aides liées à son handicap ?",
         options:["Non, il faut choisir une seule aide","Oui, certaines aides liées au handicap peuvent se cumuler avec d'autres bourses, selon les conditions"], correct:1,
         explication:"Les aides liées au handicap (PCH, aides spécifiques de l'établissement) répondent à des besoins différents de la bourse sociale et peuvent souvent se cumuler.",
-        droit:"Chaque situation est étudiée individuellement par la MDPH ou le CROUS : ne pars jamais du principe que \"ça ne marche pas pour moi\" sans vérifier." },
+        droit:"Chaque situation est étudiée individuellement par la MDPH (Maison Départementale des Personnes Handicapées) ou le CROUS : ne pars jamais du principe que \"ça ne marche pas pour moi\" sans vérifier." },
       { format:"vf", question:"Adam hésite à faire sa demande à la MDPH : il a peur que ça lui coûte cher en frais de dossier. Vrai ou faux ?",
         options:["Vrai","Faux"], correct:1,
         explication:"Faux. La demande à la MDPH est entièrement gratuite, quel que soit le résultat.",
@@ -1060,17 +1060,21 @@ const stations = [
     ]
   },
   {
-    num:10, chapter:"travail", title:"L'emploi en entreprise",
-    categorie:"Obligation d'emploi",
+    num:10, chapter:"travail", title:"Vers l'emploi, en toute autonomie",
+    categorie:"Accompagnement vers l'emploi",
     questions:[
-      { format:"qcm", question:"Sami postule dans une entreprise et se demande si elle a une obligation d'embaucher des personnes en situation de handicap. À partir de combien de salariés une entreprise privée doit-elle employer au moins 6 % de travailleurs en situation de handicap ?",
-        options:["10 salariés","20 salariés","50 salariés"], correct:1,
-        explication:"L'obligation d'emploi (OETH) s'applique aux entreprises de 20 salariés et plus. Les cotisations des entreprises qui n'atteignent pas ce quota financent des aides : via l'Agefiph dans le secteur privé, et via le FIPHFP dans la fonction publique.",
-        droit:"Cette obligation légale crée de vraies opportunités : beaucoup d'entreprises et d'administrations recrutent activement des personnes RQTH pour y répondre." },
+      { format:"qcm", question:"Léa a terminé sa formation et cherche un emploi adapté à sa RQTH. Vers quel organisme peut-elle se tourner en priorité ?",
+        options:["Cap emploi, un réseau spécialisé dans l'accompagnement vers l'emploi des personnes en situation de handicap","Elle doit chercher seule, aucune aide n'existe","Uniquement les grandes entreprises peuvent l'aider"], correct:0,
+        explication:"Cap emploi accompagne gratuitement les personnes RQTH dans leur recherche d'emploi, de stage ou d'alternance. La Mission locale peut aussi aider les 16-25 ans, notamment ceux qui ne sont plus scolarisés.",
+        droit:"Cap emploi et la Mission locale sont gratuits et accessibles dès que tu as ta RQTH, que tu sois en études, en recherche d'emploi, ou en décrochage scolaire." },
       { format:"debat", question:"\"Si je mentionne ma RQTH en entretien, je n'aurai jamais le poste.\" Comment déconstruire cette peur en équipe ?",
         prompt:"Discutez : à quel moment, selon vous, est-il le plus stratégique de mentionner sa RQTH dans un processus de recrutement ?",
         explication:"Rien n'oblige à le dire en entretien. Beaucoup de candidat·es choisissent de l'évoquer après l'embauche, au moment de demander un aménagement concret.",
-        droit:"Le choix du moment t'appartient entièrement : avant, pendant ou après l'embauche, voire jamais si tu n'as besoin d'aucun aménagement." }
+        droit:"Le choix du moment t'appartient entièrement : avant, pendant ou après l'embauche, voire jamais si tu n'as besoin d'aucun aménagement." },
+      { format:"vf", question:"Thomas doit passer son permis de conduire mais a besoin d'aménagements (véhicule adapté, temps supplémentaire). Est-ce possible avec la RQTH ? Vrai ou faux ?",
+        options:["Vrai","Faux"], correct:0,
+        explication:"Vrai. Il existe des auto-écoles spécialisées et des aménagements du permis (véhicule adapté, temps additionnel à l'examen). La MDPH ou l'Agefiph peuvent aussi financer une partie du coût.",
+        droit:"Un médecin agréé par la préfecture évalue les aptitudes à la conduite et les aménagements nécessaires avant le passage du permis." }
     ]
   },
   {
@@ -1115,7 +1119,7 @@ const rightsRecap = [
 const agendaPlan = [
   { time:"0–5 min", title:"Lancement", desc:"Accueil, présentation du parcours en 6 chapitres et 12 étapes, formation des équipes.", detail:"Affiche le QR code de l'affiche de présentation (ou projette-le). Forme des équipes de 2 à 4 jeunes. Précise que le parcours est organisé en 6 chapitres : Comprendre le handicap, Santé mentale, Études, Aides financières, Monde du travail, Faire sa demande." },
   { time:"5–10 min", title:"Mise en contexte", desc:"Courte introduction orale sur la RQTH et pourquoi ce sujet concerne les jeunes dès 16 ans.", detail:"Insiste sur 3 messages avant de lancer le jeu : la RQTH concerne aussi les handicaps invisibles, elle est confidentielle, et c'est une démarche réversible et gratuite. Préviens que le parcours mélange QCM, vrai/faux, mises en situation et temps de débat en équipe. Signale aussi les options d'accessibilité (police, taille de texte, thème, lecture vocale) disponibles via l'icône ⚙ en haut de l'écran." },
-  { time:"10–45 min", title:"Le parcours (12 étapes, 24 questions)", desc:"Les équipes parcourent les étapes à leur rythme. Les questions \"débat\" demandent 2 minutes d'échange en équipe avant de continuer.", detail:"Circule entre les équipes, en particulier sur les étapes de débat (3, 7, 10) qui suscitent le plus de discussion. Les étapes santé mentale (4-5) et confidentialité méritent aussi un temps d'écoute si des jeunes réagissent personnellement." },
+  { time:"10–45 min", title:"Le parcours (12 étapes, 25 questions)", desc:"Les équipes parcourent les étapes à leur rythme. Les questions \"débat\" demandent 2 minutes d'échange en équipe avant de continuer.", detail:"Circule entre les équipes, en particulier sur les étapes de débat (3, 7, 10) qui suscitent le plus de discussion. Les étapes santé mentale (4-5) et confidentialité méritent aussi un temps d'écoute si des jeunes réagissent personnellement." },
   { time:"45–53 min", title:"Débrief collectif", desc:"Retour en groupe sur les découvertes, les surprises, les questions de débat abordées.", detail:"Reprends les 3 questions de débat (âge minimum, RQTH en entretien, signaler son handicap en candidature) et demande aux équipes ce qu'elles en ont conclu. Corrige les dernières idées reçues persistantes." },
   { time:"53–60 min", title:"Clôture et ressources", desc:"Affichage de l'écran récapitulatif des droits, rappel du QR code de l'application à emporter.", detail:"Projette l'écran final (passeport des droits) en mode joueur. Rappelle que la démarche se fait à la MDPH, qu'aucune décision n'est à prendre dans l'immédiat, et que l'appli reste accessible après l'atelier grâce au QR code de l'affiche." }
 ];
