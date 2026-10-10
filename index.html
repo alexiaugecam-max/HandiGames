@@ -129,7 +129,7 @@ html,body{
 
 body{
   background-image:
-    radial-gradient(circle at 14% 6%, color-mix(in srgb, var(--accent-sun-pop) 18%, transparent), transparent 42%),
+    radial-gradient(circle at 14% 6%, color-mix(in srgb, var(--accent-teal) 16%, transparent), transparent 42%),
     radial-gradient(circle at 88% 14%, color-mix(in srgb, var(--accent-violet) 14%, transparent), transparent 40%),
     radial-gradient(circle at 80% 92%, color-mix(in srgb, var(--accent-coral) 10%, transparent), transparent 45%);
   transition: background-color 0.2s, color 0.2s;
@@ -460,9 +460,12 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
   margin:0 0 0.9rem;
 }
 .entry-cartouche p.lede-definition{
-  background:var(--surface-muted); border-radius:var(--radius-md); padding:0.8rem 1rem;
+  display:flex; align-items:flex-start; gap:0.6rem;
+  background:color-mix(in srgb, var(--accent-teal) 12%, var(--surface-card)); border-left:4px solid var(--accent-teal-strong);
+  border-radius:0 var(--radius-md) var(--radius-md) 0; padding:0.8rem 1rem;
   font-size:0.95em; font-weight:600; color:var(--text-secondary); margin:0 0 1.1rem; text-align:left;
 }
+.entry-cartouche p.lede-definition .ico-svg{ width:19px; height:19px; flex-shrink:0; margin-top:0.1rem; color:var(--accent-teal-strong); }
 .entry-cartouche p.lede{ text-align:left; max-width:none; margin:0 0 0.9rem; }
 .entry-cartouche p.lede:last-of-type{ margin-bottom:0; }
 .entry-cartouche p.lede-cta{
@@ -1481,7 +1484,7 @@ function renderEntry(){
         <div class="entry-hero-icon" aria-hidden="true">${icon('rocket')}</div>
         <div class="kicker">${icon('sparkles')} C'est parti pour l'aventure !</div>
         <h1 tabindex="-1" data-focus="1">12 étapes à explorer.<br><span class="accent">${totalQuestions()} questions</span> qui vont te surprendre.</h1>
-        <p class="lede-definition">RQTH, ça veut dire Reconnaissance de la Qualité de Travailleur Handicapé : un statut administratif qui ouvre droit à des aménagements et des aides, à l'école comme au travail.</p>
+        <p class="lede-definition">${icon('scale')}<span>RQTH, ça veut dire Reconnaissance de la Qualité de Travailleur Handicapé : un statut administratif qui ouvre droit à des aménagements et des aides, à l'école comme au travail.</span></p>
         <p class="lede-tagline">Prêt à relever le défi ?</p>
         <p class="lede">Pars à la découverte de tes droits à travers 6 chapitres et 12 étapes ! À chaque étape, de nouvelles questions t'attendent pour tester tes connaissances, découvrir des informations surprenantes et avancer dans ton aventure.</p>
         <p class="lede">Choisis ton chapitre, explore les étapes et progresse à ton rythme grâce aux boutons « Suivant » et « Précédent ».</p>
