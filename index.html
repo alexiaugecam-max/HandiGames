@@ -697,12 +697,23 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
 
 .agenda{ display:flex; flex-direction:column; gap:0.7rem; margin-bottom:1.6rem; }
 .agenda-item{
-  display:grid; grid-template-columns:74px 1fr; gap:0.9rem; background:var(--surface-card); border:2.5px solid var(--surface-border);
-  border-radius:var(--radius-md); padding:0.9rem 1rem; cursor:pointer; width:100%; text-align:left; font-family:inherit; color:var(--text-primary);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  display:grid; grid-template-columns:74px 1fr; gap:0.9rem; align-items:center;
+  background-color:var(--surface-card);
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--step-color, var(--accent-coral)) 9%, var(--surface-card)), var(--surface-card) 65%);
+  border:2.5px solid var(--surface-border);
+  border-radius:var(--radius-md); padding:0.8rem 1rem; cursor:pointer; width:100%; text-align:left; font-family:inherit; color:var(--text-primary);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
-.agenda-item[aria-pressed="true"]{ border-color:var(--accent-coral); box-shadow:3px 3px 0 var(--accent-coral); }
-.agenda-time{ font-weight:800; color:var(--accent-teal-strong); font-size:0.82em; align-self:center; }
+.agenda-item:hover{ transform:translate(-1px,-2px); box-shadow:4px 5px 0 var(--step-color, var(--accent-coral)); }
+.agenda-item[aria-pressed="true"]{ border-color:var(--step-color, var(--accent-coral)); box-shadow:3px 3px 0 var(--step-color, var(--accent-coral)); }
+.agenda-time-col{ display:flex; flex-direction:column; align-items:center; gap:0.35rem; }
+.agenda-ico{
+  width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--step-color, var(--accent-coral)) 80%, #fff 20%), var(--step-color, var(--accent-coral)));
+  color:var(--text-on-accent); box-shadow:2px 2px 0 rgba(0,0,0,0.15);
+}
+.agenda-ico .ico-svg{ width:20px; height:20px; }
+.agenda-time{ font-weight:800; color:var(--text-secondary); font-size:0.74em; text-align:center; line-height:1.15; }
 .agenda-body strong{ display:block; font-size:0.98em; margin-bottom:0.15rem; font-family:var(--font-display); }
 .agenda-body p{ font-size:0.85em; color:var(--text-secondary); font-weight:600; }
 
@@ -1148,11 +1159,11 @@ const rightsRecap = [
 ];
 
 const agendaPlan = [
-  { time:"0–5 min", title:"Lancement", desc:"Accueil, présentation du parcours en 6 chapitres et 12 étapes, formation des équipes.", detail:"Affiche le QR code de l'affiche de présentation (ou projette-le). Forme des équipes de 2 à 4 jeunes. Précise que le parcours est organisé en 6 chapitres : Comprendre le handicap, Santé mentale, Études, Aides financières, Monde du travail, Faire sa demande." },
-  { time:"5–10 min", title:"Mise en contexte", desc:"Courte introduction orale sur la RQTH et pourquoi ce sujet concerne les jeunes dès 16 ans.", detail:"Insiste sur 3 messages avant de lancer le jeu : la RQTH concerne aussi les handicaps invisibles, elle est confidentielle, et c'est une démarche réversible et gratuite. Préviens que le parcours mélange QCM, vrai/faux, mises en situation et temps de débat en équipe. Signale aussi les options d'accessibilité (police, taille de texte, thème, lecture vocale) disponibles via l'icône ⚙ en haut de l'écran." },
-  { time:"10–45 min", title:"Le parcours (12 étapes, 26 questions)", desc:"Les équipes parcourent les étapes à leur rythme. Les questions \"débat\" demandent 2 minutes d'échange en équipe avant de continuer.", detail:"Circule entre les équipes, en particulier sur les étapes de débat (3, 7, 10) qui suscitent le plus de discussion. Les étapes santé mentale (4-5) et confidentialité méritent aussi un temps d'écoute si des jeunes réagissent personnellement." },
-  { time:"45–53 min", title:"Débrief collectif", desc:"Retour en groupe sur les découvertes, les surprises, les questions de débat abordées.", detail:"Reprends les 3 questions de débat (âge minimum, RQTH en entretien, signaler son handicap en candidature) et demande aux équipes ce qu'elles en ont conclu. Corrige les dernières idées reçues persistantes." },
-  { time:"53–60 min", title:"Clôture et ressources", desc:"Affichage de l'écran récapitulatif des droits, rappel du QR code de l'application à emporter.", detail:"Projette l'écran final (passeport des droits) en mode joueur. Rappelle que la démarche se fait à la MDPH, qu'aucune décision n'est à prendre dans l'immédiat, et que l'appli reste accessible après l'atelier grâce au QR code de l'affiche." }
+  { time:"0–5 min", title:"Lancement", ico:"rocket", color:"var(--accent-coral)", desc:"Accueil, présentation du parcours en 6 chapitres et 12 étapes, formation des équipes.", detail:"Affiche le QR code de l'affiche de présentation (ou projette-le). Forme des équipes de 2 à 4 jeunes. Précise que le parcours est organisé en 6 chapitres : Comprendre le handicap, Santé mentale, Études, Aides financières, Monde du travail, Faire sa demande." },
+  { time:"5–10 min", title:"Mise en contexte", ico:"bulb", color:"var(--accent-sun)", desc:"Courte introduction orale sur la RQTH et pourquoi ce sujet concerne les jeunes dès 16 ans.", detail:"Insiste sur 3 messages avant de lancer le jeu : la RQTH concerne aussi les handicaps invisibles, elle est confidentielle, et c'est une démarche réversible et gratuite. Préviens que le parcours mélange QCM, vrai/faux, mises en situation et temps de débat en équipe. Signale aussi les options d'accessibilité (police, taille de texte, thème, lecture vocale) disponibles via l'icône ⚙ en haut de l'écran." },
+  { time:"10–45 min", title:"Le parcours (12 étapes, 26 questions)", ico:"flag", color:"var(--accent-teal)", desc:"Les équipes parcourent les étapes à leur rythme. Les questions \"débat\" demandent 2 minutes d'échange en équipe avant de continuer.", detail:"Circule entre les équipes, en particulier sur les étapes de débat (3, 7, 10) qui suscitent le plus de discussion. Les étapes santé mentale (4-5) et confidentialité méritent aussi un temps d'écoute si des jeunes réagissent personnellement." },
+  { time:"45–53 min", title:"Débrief collectif", ico:"chat", color:"var(--accent-violet)", desc:"Retour en groupe sur les découvertes, les surprises, les questions de débat abordées.", detail:"Reprends les 3 questions de débat (âge minimum, RQTH en entretien, signaler son handicap en candidature) et demande aux équipes ce qu'elles en ont conclu. Corrige les dernières idées reçues persistantes." },
+  { time:"53–60 min", title:"Clôture et ressources", ico:"trophy", color:"var(--accent-coral-strong)", desc:"Affichage de l'écran récapitulatif des droits, rappel du QR code de l'application à emporter.", detail:"Projette l'écran final (passeport des droits) en mode joueur. Rappelle que la démarche se fait à la MDPH, qu'aucune décision n'est à prendre dans l'immédiat, et que l'appli reste accessible après l'atelier grâce au QR code de l'affiche." }
 ];
 
 /* ===================== GUIDE DE DÉBRIEF ANIMATEUR =====================
@@ -1166,11 +1177,11 @@ const debriefOpening = [
 ];
 
 const debriefDebates = [
-  { station:"Étape 3", title:"\"S'enfermer dans une case pour la vie ?\"",
+  { station:"Étape 3", color:"var(--accent-coral)", title:"\"S'enfermer dans une case pour la vie ?\"",
     angle:"Beaucoup pensent que la RQTH est définitive. Rappeler qu'elle est temporaire (1 à 10 ans), renouvelable ou non, et que c'est toujours le jeune qui décide de l'activer ou non." },
-  { station:"Étape 7", title:"\"Mentionner son handicap sur un dossier d'admission, un risque ?\"",
+  { station:"Étape 7", color:"var(--accent-teal)", title:"\"Mentionner son handicap sur un dossier d'admission, un risque ?\"",
     angle:"Faire émerger la peur de la discrimination (réelle, mais illégale) vs. l'intérêt concret de le signaler en amont (accompagnement, aménagements). Demander : \"Qu'est-ce qui vous ferait hésiter, vous ?\"" },
-  { station:"Étape 10", title:"\"Le dire en entretien d'embauche, c'est risqué ?\"",
+  { station:"Étape 10", color:"var(--accent-violet)", title:"\"Le dire en entretien d'embauche, c'est risqué ?\"",
     angle:"Il n'y a pas de bon moment universel — avant, pendant, après l'embauche, ou jamais. Demander aux équipes ce qu'elles ont répondu et pourquoi." }
 ];
 
@@ -2091,16 +2102,19 @@ function restart(){
 
 function renderFacilitator(){
   const agendaHtml = agendaPlan.map((a, idx) => `
-    <button class="agenda-item" aria-pressed="${idx === activeAgendaIdx}" onclick="selectAgenda(${idx})">
-      <div class="agenda-time">${a.time}</div>
+    <button class="agenda-item" style="--step-color:${a.color}" aria-pressed="${idx === activeAgendaIdx}" onclick="selectAgenda(${idx})">
+      <div class="agenda-time-col">
+        <div class="agenda-ico">${icon(a.ico)}</div>
+        <div class="agenda-time">${a.time}</div>
+      </div>
       <div class="agenda-body"><strong>${a.title}</strong><p>${a.desc}</p></div>
     </button>`).join('');
 
   const agendaScreen = `
     <div class="agenda" role="group" aria-label="Déroulé de l'atelier">${agendaHtml}</div>
 
-    <div class="sheet" id="fac-detail">
-      <div class="label">Note d'animation</div>
+    <div class="sheet" id="fac-detail" style="--step-color:${agendaPlan[activeAgendaIdx].color}; border-color:var(--step-color);">
+      <div class="label" style="color:var(--step-color);">${icon(agendaPlan[activeAgendaIdx].ico)} Note d'animation</div>
       <h3 style="margin-top:0.4rem;">${agendaPlan[activeAgendaIdx].title}</h3>
       <p style="color:var(--text-secondary); margin-top:0.5rem;">${agendaPlan[activeAgendaIdx].detail}</p>
     </div>
@@ -2155,7 +2169,7 @@ function renderDebriefGuide(){
 
   const debatesHtml = debriefDebates.map(d => `
     <div class="debrief-debate">
-      <div class="debrief-debate-head"><span class="debrief-station-tag">${d.station}</span><strong>${d.title}</strong></div>
+      <div class="debrief-debate-head"><span class="debrief-station-tag" style="background:${d.color};">${d.station}</span><strong>${d.title}</strong></div>
       <p>${d.angle}</p>
     </div>`).join('');
 
@@ -2166,8 +2180,8 @@ function renderDebriefGuide(){
     </div>`).join('');
 
   return `
-    <div class="sheet">
-      <div class="label">${icon('chat')} À utiliser juste après le parcours</div>
+    <div class="sheet" style="border-color:var(--accent-violet);">
+      <div class="label" style="color:var(--accent-violet-strong);">${icon('chat')} À utiliser juste après le parcours</div>
       <h3 style="margin-top:0.4rem;">Questions d'ouverture</h3>
       <p style="color:var(--text-secondary); margin:0.3rem 0 0.7rem;">2-3 minutes pour lancer la parole en grand groupe.</p>
       <ul class="debrief-list">${openingHtml}</ul>
@@ -2184,8 +2198,8 @@ function renderDebriefGuide(){
       <div class="debrief-misconceptions">${misconceptionsHtml}</div>
     </div>
 
-    <div class="sheet">
-      <div class="label">${icon('bulb')} Question de clôture — mini-débat</div>
+    <div class="sheet" style="border-color:var(--accent-sun);">
+      <div class="label" style="color:var(--accent-sun-pop, var(--accent-sun));">${icon('bulb')} Question de clôture — mini-débat</div>
       <p style="margin-top:0.5rem; font-weight:700; font-size:1.02em;">${debriefClosing}</p>
     </div>
 
