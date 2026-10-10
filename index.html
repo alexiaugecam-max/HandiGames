@@ -718,6 +718,33 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
   font-size:0.85em; color:var(--text-secondary); margin-top:1.2rem; font-weight:600;
 }
 
+.fac-tab-switch{ margin:1.2rem 0 1.4rem; }
+.fac-tab-switch button{ display:inline-flex; align-items:center; gap:0.35rem; }
+.fac-tab-switch .ico-svg{ width:16px; height:16px; }
+
+.debrief-list{ margin:0; padding-left:1.2rem; color:var(--text-primary); font-weight:600; }
+.debrief-list li{ margin-bottom:0.5rem; }
+.debrief-list li:last-child{ margin-bottom:0; }
+
+.debrief-debate{ padding:0.85rem 0; border-top:1.5px dashed var(--surface-border); }
+.debrief-debate:first-of-type{ border-top:none; padding-top:0; }
+.debrief-debate-head{ display:flex; align-items:baseline; gap:0.5rem; margin-bottom:0.3rem; flex-wrap:wrap; }
+.debrief-station-tag{
+  background:var(--accent-teal); color:var(--text-on-accent); font-size:0.7em; font-weight:800;
+  padding:0.15rem 0.5rem; border-radius:20px; letter-spacing:0.02em; white-space:nowrap;
+}
+.debrief-debate-head strong{ font-family:var(--font-display); font-size:0.98em; }
+.debrief-debate p{ color:var(--text-secondary); font-size:0.9em; margin:0; }
+
+.debrief-misconceptions{ display:flex; flex-direction:column; gap:0.6rem; }
+.debrief-misconception{
+  display:flex; flex-direction:column; gap:0.3rem; background:var(--surface-muted);
+  border-radius:var(--radius-md); padding:0.7rem 0.9rem; font-size:0.9em; font-weight:700;
+}
+.debrief-misconception .dm-idee{ display:flex; align-items:center; gap:0.4rem; color:var(--accent-coral); }
+.debrief-misconception .dm-correction{ display:flex; align-items:center; gap:0.4rem; color:var(--accent-teal-strong); }
+.debrief-misconception .ico-svg{ width:15px; height:15px; flex-shrink:0; }
+
 footer{ text-align:center; padding:1.3rem; font-size:0.78em; color:var(--text-secondary); font-weight:700; }
 footer .footer-legal{ display:flex; flex-direction:column; gap:0.15rem; font-size:0.95em; }
 footer .footer-legal .fl-brand{ color:var(--accent-teal-strong); font-family:var(--font-display); letter-spacing:0.02em; }
@@ -1128,6 +1155,34 @@ const agendaPlan = [
   { time:"53–60 min", title:"Clôture et ressources", desc:"Affichage de l'écran récapitulatif des droits, rappel du QR code de l'application à emporter.", detail:"Projette l'écran final (passeport des droits) en mode joueur. Rappelle que la démarche se fait à la MDPH, qu'aucune décision n'est à prendre dans l'immédiat, et que l'appli reste accessible après l'atelier grâce au QR code de l'affiche." }
 ];
 
+/* ===================== GUIDE DE DÉBRIEF ANIMATEUR =====================
+   Support pour mener le temps d'échange collectif juste après le parcours :
+   questions d'ouverture, reprise des 3 temps de débat, idées reçues les
+   plus fréquentes à corriger, et une question de clôture façon mini-débat. */
+const debriefOpening = [
+  "Qu'est-ce qui vous a le plus surpris dans ce que vous avez découvert ?",
+  "Y a-t-il une question à laquelle vous ne vous attendiez pas ?",
+  "Est-ce qu'il y a des points que vous voulez qu'on reprenne ensemble ?"
+];
+
+const debriefDebates = [
+  { station:"Étape 3", title:"\"S'enfermer dans une case pour la vie ?\"",
+    angle:"Beaucoup pensent que la RQTH est définitive. Rappeler qu'elle est temporaire (1 à 10 ans), renouvelable ou non, et que c'est toujours le jeune qui décide de l'activer ou non." },
+  { station:"Étape 7", title:"\"Mentionner son handicap sur un dossier d'admission, un risque ?\"",
+    angle:"Faire émerger la peur de la discrimination (réelle, mais illégale) vs. l'intérêt concret de le signaler en amont (accompagnement, aménagements). Demander : \"Qu'est-ce qui vous ferait hésiter, vous ?\"" },
+  { station:"Étape 10", title:"\"Le dire en entretien d'embauche, c'est risqué ?\"",
+    angle:"Il n'y a pas de bon moment universel — avant, pendant, après l'embauche, ou jamais. Demander aux équipes ce qu'elles ont répondu et pourquoi." }
+];
+
+const debriefMisconceptions = [
+  { idee:"\"Le handicap, ça se voit.\"", correction:"80 % des handicaps sont invisibles." },
+  { idee:"\"La RQTH, c'est pour la vie.\"", correction:"Réversible, à activer quand on veut." },
+  { idee:"\"Il faut tout dire à son employeur.\"", correction:"Secret médical : c'est un choix." },
+  { idee:"\"La MDPH, ça coûte cher.\"", correction:"Démarche gratuite, à tout moment." }
+];
+
+const debriefClosing = "Si un·e ami·e vous disait qu'il/elle hésite à demander la RQTH par peur du regard des autres, qu'est-ce que vous lui diriez maintenant ?";
+
 /* ===================== ÉTAT ===================== */
 
 let state = { mode:'player', screen:'entry', current:0, qIndex:0, done:{}, progress:{}, answers:{}, prenom:'', consigneSeen:false };
@@ -1135,6 +1190,7 @@ let history = [];
 let timer = { seconds:3600, running:false, interval:null };
 let prefs = { font:'default', size:'medium', theme:'light', voiceOn:false };
 let activeAgendaIdx = 0;
+let facTab = 'agenda';
 let synthUtterance = null;
 
 /* ===================== CODE ANIMATEUR =====================
@@ -2040,22 +2096,7 @@ function renderFacilitator(){
       <div class="agenda-body"><strong>${a.title}</strong><p>${a.desc}</p></div>
     </button>`).join('');
 
-  return `
-    <div class="fac-header">
-      <div>
-        <h1 tabindex="-1" data-focus="1">Déroulé d'atelier — 1h</h1>
-        <p>Le Parcours RQTH · 12 étapes · ${totalQuestions()} questions · sensibilisation aux droits des jeunes pouvant prétendre à la RQTH.</p>
-      </div>
-      <div class="timer-box">
-        <div class="t-label">TEMPS RESTANT</div>
-        <div class="t-val" id="timer-display" aria-live="off">${formatTime(timer.seconds)}</div>
-        <div class="t-controls">
-          <button onclick="toggleTimer()" id="timer-toggle">${timer.running ? 'Pause' : 'Démarrer'}</button>
-          <button onclick="resetTimer()">Réinitialiser</button>
-        </div>
-      </div>
-    </div>
-
+  const agendaScreen = `
     <div class="agenda" role="group" aria-label="Déroulé de l'atelier">${agendaHtml}</div>
 
     <div class="sheet" id="fac-detail">
@@ -2075,6 +2116,81 @@ function renderFacilitator(){
 
     <div class="printable-note">
       <strong>Un seul QR code pour tout le parcours :</strong> celui de l'affiche de présentation (« Le Jeu de Piste RQTH : Votre Guide d'Aventure »). Affiche-le ou projette-le en début d'atelier : les jeunes le scannent, choisissent un chapitre et progressent dans les 12 étapes depuis leur téléphone. Les étapes de débat (3, 7, 10) gagnent à se faire dans un coin plus calme de la salle pour permettre l'échange en équipe.
+    </div>`;
+
+  const debriefScreen = renderDebriefGuide();
+
+  return `
+    <div class="fac-header">
+      <div>
+        <h1 tabindex="-1" data-focus="1">Déroulé d'atelier — 1h</h1>
+        <p>Le Parcours RQTH · 12 étapes · ${totalQuestions()} questions · sensibilisation aux droits des jeunes pouvant prétendre à la RQTH.</p>
+      </div>
+      <div class="timer-box">
+        <div class="t-label">TEMPS RESTANT</div>
+        <div class="t-val" id="timer-display" aria-live="off">${formatTime(timer.seconds)}</div>
+        <div class="t-controls">
+          <button onclick="toggleTimer()" id="timer-toggle">${timer.running ? 'Pause' : 'Démarrer'}</button>
+          <button onclick="resetTimer()">Réinitialiser</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode-switch fac-tab-switch" role="group" aria-label="Choisir la vue animateur">
+      <button aria-pressed="${facTab === 'agenda'}" onclick="setFacTab('agenda')">${icon('calendar')} Déroulé d'atelier</button>
+      <button aria-pressed="${facTab === 'debrief'}" onclick="setFacTab('debrief')">${icon('chat')} Guide de débrief</button>
+    </div>
+
+    ${facTab === 'agenda' ? agendaScreen : debriefScreen}
+  `;
+}
+
+function setFacTab(tab){
+  facTab = tab;
+  render(false);
+}
+
+function renderDebriefGuide(){
+  const openingHtml = debriefOpening.map(q => `<li>${q}</li>`).join('');
+
+  const debatesHtml = debriefDebates.map(d => `
+    <div class="debrief-debate">
+      <div class="debrief-debate-head"><span class="debrief-station-tag">${d.station}</span><strong>${d.title}</strong></div>
+      <p>${d.angle}</p>
+    </div>`).join('');
+
+  const misconceptionsHtml = debriefMisconceptions.map(m => `
+    <div class="debrief-misconception">
+      <span class="dm-idee">${icon('xCircle')} ${m.idee}</span>
+      <span class="dm-correction">${icon('check')} ${m.correction}</span>
+    </div>`).join('');
+
+  return `
+    <div class="sheet">
+      <div class="label">${icon('chat')} À utiliser juste après le parcours</div>
+      <h3 style="margin-top:0.4rem;">Questions d'ouverture</h3>
+      <p style="color:var(--text-secondary); margin:0.3rem 0 0.7rem;">2-3 minutes pour lancer la parole en grand groupe.</p>
+      <ul class="debrief-list">${openingHtml}</ul>
+    </div>
+
+    <div class="sheet">
+      <h3 style="margin-top:0;">Les 3 temps de débat à rediscuter</h3>
+      <p style="color:var(--text-secondary); margin:0.3rem 0 0.9rem;">Reprends les 3 questions de débat rencontrées dans le parcours et demande aux équipes ce qu'elles en ont conclu.</p>
+      ${debatesHtml}
+    </div>
+
+    <div class="sheet">
+      <h3 style="margin-top:0;">Idées reçues à corriger si elles reviennent</h3>
+      <div class="debrief-misconceptions">${misconceptionsHtml}</div>
+    </div>
+
+    <div class="sheet">
+      <div class="label">${icon('bulb')} Question de clôture — mini-débat</div>
+      <p style="margin-top:0.5rem; font-weight:700; font-size:1.02em;">${debriefClosing}</p>
+    </div>
+
+    <div class="printable-note">
+      Ce guide est un point de départ : laisse la discussion suivre ce qui ressort vraiment du groupe, l'essentiel est que chacun reparte avec des réponses claires à ses propres questions.
     </div>
   `;
 }
