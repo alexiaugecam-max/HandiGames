@@ -1287,7 +1287,7 @@ function tryUnlock(e){
   if(e) e.preventDefault();
   const input = document.getElementById('fac-code-input');
   const val = input ? input.value.trim() : '';
-  if(val === FACILITATOR_CODE){
+  if(val.toUpperCase() === FACILITATOR_CODE){
     facUnlocked = true;
     render(false);
   } else {
