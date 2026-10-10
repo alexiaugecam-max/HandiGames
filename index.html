@@ -937,6 +937,10 @@ const stations = [
     num:1, chapter:"comprendre", title:"Le point de départ",
     categorie:"Idées reçues",
     questions:[
+      { format:"qcm", question:"Avant de commencer l'aventure, un petit point de vocabulaire : que signifie le sigle RQTH ?",
+        options:["Reconnaissance de la Qualité de Travailleur Handicapé","Régime de Qualification des Travailleurs à Handicap","Réseau de Quartier pour Travailleurs Handicapés"], correct:0,
+        explication:"RQTH = Reconnaissance de la Qualité de Travailleur Handicapé. C'est un statut administratif qui ouvre droit à des aménagements et des aides, à l'école comme au travail.",
+        droit:"Ce statut est confidentiel, gratuit à demander, et c'est toi qui décides de l'utiliser ou non." },
       { format:"qcm", question:"Chloé discute avec un copain qui lui dit : 'Je ne connais personne en situation de handicap dans mon entourage.' Pourtant, il ne s'en rend peut-être pas compte. Sur 10 personnes en situation de handicap, combien n'ont, selon toi, aucun signe visible ?",
         options:["Environ 2 sur 10","Environ 5 sur 10","Environ 8 sur 10"], correct:2,
         explication:"80 % des handicaps ne se voient pas au premier coup d'œil.",
@@ -1119,7 +1123,7 @@ const rightsRecap = [
 const agendaPlan = [
   { time:"0–5 min", title:"Lancement", desc:"Accueil, présentation du parcours en 6 chapitres et 12 étapes, formation des équipes.", detail:"Affiche le QR code de l'affiche de présentation (ou projette-le). Forme des équipes de 2 à 4 jeunes. Précise que le parcours est organisé en 6 chapitres : Comprendre le handicap, Santé mentale, Études, Aides financières, Monde du travail, Faire sa demande." },
   { time:"5–10 min", title:"Mise en contexte", desc:"Courte introduction orale sur la RQTH et pourquoi ce sujet concerne les jeunes dès 16 ans.", detail:"Insiste sur 3 messages avant de lancer le jeu : la RQTH concerne aussi les handicaps invisibles, elle est confidentielle, et c'est une démarche réversible et gratuite. Préviens que le parcours mélange QCM, vrai/faux, mises en situation et temps de débat en équipe. Signale aussi les options d'accessibilité (police, taille de texte, thème, lecture vocale) disponibles via l'icône ⚙ en haut de l'écran." },
-  { time:"10–45 min", title:"Le parcours (12 étapes, 25 questions)", desc:"Les équipes parcourent les étapes à leur rythme. Les questions \"débat\" demandent 2 minutes d'échange en équipe avant de continuer.", detail:"Circule entre les équipes, en particulier sur les étapes de débat (3, 7, 10) qui suscitent le plus de discussion. Les étapes santé mentale (4-5) et confidentialité méritent aussi un temps d'écoute si des jeunes réagissent personnellement." },
+  { time:"10–45 min", title:"Le parcours (12 étapes, 26 questions)", desc:"Les équipes parcourent les étapes à leur rythme. Les questions \"débat\" demandent 2 minutes d'échange en équipe avant de continuer.", detail:"Circule entre les équipes, en particulier sur les étapes de débat (3, 7, 10) qui suscitent le plus de discussion. Les étapes santé mentale (4-5) et confidentialité méritent aussi un temps d'écoute si des jeunes réagissent personnellement." },
   { time:"45–53 min", title:"Débrief collectif", desc:"Retour en groupe sur les découvertes, les surprises, les questions de débat abordées.", detail:"Reprends les 3 questions de débat (âge minimum, RQTH en entretien, signaler son handicap en candidature) et demande aux équipes ce qu'elles en ont conclu. Corrige les dernières idées reçues persistantes." },
   { time:"53–60 min", title:"Clôture et ressources", desc:"Affichage de l'écran récapitulatif des droits, rappel du QR code de l'application à emporter.", detail:"Projette l'écran final (passeport des droits) en mode joueur. Rappelle que la démarche se fait à la MDPH, qu'aucune décision n'est à prendre dans l'immédiat, et que l'appli reste accessible après l'atelier grâce au QR code de l'affiche." }
 ];
@@ -1406,6 +1410,7 @@ function renderEntry(){
         <div class="entry-hero-icon" aria-hidden="true">${icon('rocket')}</div>
         <div class="kicker">${icon('sparkles')} C'est parti pour l'aventure !</div>
         <h1 tabindex="-1" data-focus="1">12 étapes à explorer.<br><span class="accent">${totalQuestions()} questions</span> qui vont te surprendre.</h1>
+        <p class="lede-tagline">RQTH, ça veut dire Reconnaissance de la Qualité de Travailleur Handicapé : un statut administratif qui ouvre droit à des aménagements et des aides, à l'école comme au travail.</p>
         <p class="lede-tagline">Prêt à relever le défi ?</p>
         <p class="lede">Pars à la découverte de tes droits à travers 6 chapitres et 12 étapes ! À chaque étape, de nouvelles questions t'attendent pour tester tes connaissances, découvrir des informations surprenantes et avancer dans ton aventure.</p>
         <p class="lede">Choisis ton chapitre, explore les étapes et progresse à ton rythme grâce aux boutons « Suivant » et « Précédent ».</p>
