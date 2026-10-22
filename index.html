@@ -376,6 +376,10 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
   display:flex; align-items:center; justify-content:center;
 }
 .speak-btn.speaking{ background:var(--accent-coral); color:var(--text-on-accent); border-color:var(--accent-coral); animation: pulse 0.8s infinite; }
+.speak-btn.labeled{ width:auto; height:auto; padding:0.5rem 0.9rem; border-radius:20px; gap:0.4rem; font-weight:700; font-size:0.85em; font-family:var(--font-body); }
+.consigne-head{ display:flex; align-items:center; justify-content:space-between; gap:0.5rem; margin-bottom:0.3rem; }
+.consigne-head strong{ font-family:var(--font-display); font-size:1.1em; }
+.entry-cartouche .intro-speak-btn{ margin:0.9rem 0; }
 @keyframes pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
 
 .options{ display:flex; flex-direction:column; gap:0.85rem; }
@@ -1522,6 +1526,7 @@ function renderEntry(){
         <div class="entry-hero-icon" aria-hidden="true">${icon('rocket')}</div>
         <div class="kicker">${icon('sparkles')} C'est parti pour l'aventure !</div>
         <h1 tabindex="-1" data-focus="1">12 étapes à explorer.<br><span class="accent">${totalQuestions()} questions</span> qui vont te surprendre.</h1>
+        ${prefs.voiceOn ? `<button class="speak-btn labeled intro-speak-btn" type="button" aria-label="Écouter la présentation à voix haute" onclick='speakText(${JSON.stringify("12 étapes à explorer. " + totalQuestions() + " questions qui vont te surprendre. RQTH, ça veut dire Reconnaissance de la Qualité de Travailleur Handicapé : un statut administratif qui ouvre droit à des aménagements et des aides, à l'école comme au travail. Prêt à relever le défi ? Pars à la découverte de tes droits à travers 6 chapitres et 12 étapes ! À chaque étape, de nouvelles questions t'attendent pour tester tes connaissances, découvrir des informations surprenantes et avancer dans ton aventure. Choisis ton chapitre, explore les étapes et progresse à ton rythme grâce aux boutons « Suivant » et « Précédent ». Ici, pas de chrono, pas de note et pas de pression ! Chaque réponse est une occasion d'apprendre. À toi de jouer : termine les 12 étapes pour débloquer ton certificat et tous tes badges !").replace(/'/g,"&#39;")}, this)'>${icon('speaker')} <span>Écouter la présentation</span></button>` : ''}
         <p class="lede-definition">${icon('scale')}<span>RQTH, ça veut dire Reconnaissance de la Qualité de Travailleur Handicapé : un statut administratif qui ouvre droit à des aménagements et des aides, à l'école comme au travail.</span></p>
         <p class="lede-tagline">Prêt à relever le défi ?</p>
         <p class="lede">Pars à la découverte de tes droits à travers 6 chapitres et 12 étapes ! À chaque étape, de nouvelles questions t'attendent pour tester tes connaissances, découvrir des informations surprenantes et avancer dans ton aventure.</p>
@@ -1594,8 +1599,11 @@ function renderStation(i, qIdx){
   const prevLocked = !!(prevT && state.progress[prevT.i + '-' + prevT.q]);
   const showPrevBtn = !!prevT && !prevLocked;
   const formatLabel = { qcm:"QCM", vf:"Vrai / Faux", situation:"Mise en situation", debat:"Débat d'équipe" };
+  const spokenQuestion = q.format === 'debat'
+    ? q.question
+    : q.question + '. Choix possibles. ' + q.options.map((o,idx) => `Option ${idx+1} : ${o}`).join('. ');
   const speakHtml = prefs.voiceOn
-    ? `<button class="speak-btn" type="button" aria-label="Écouter la question à voix haute" onclick='speakText(${JSON.stringify(q.question).replace(/'/g,"&#39;")}, this)'>${icon('speaker')}</button>`
+    ? `<button class="speak-btn" type="button" aria-label="Écouter la question${q.format === 'debat' ? '' : ' et les choix de réponse'} à voix haute" onclick='speakText(${JSON.stringify(spokenQuestion).replace(/'/g,"&#39;")}, this)'>${icon('speaker')}</button>`
     : '';
 
   let bodyHtml = '';
@@ -1649,12 +1657,16 @@ function renderStation(i, qIdx){
     }
   }
 
+  const consigneText = "Lis la question, choisis ta réponse, puis lis l'explication : chaque réponse t'apprend un droit. Il n'y a pas de note et tu avances à ton rythme. Utilise « Question suivante » pour continuer, ou « Question précédente » pour revenir en arrière.";
+  const consigneSpeakHtml = prefs.voiceOn
+    ? `<button class="speak-btn" type="button" aria-label="Écouter la consigne à voix haute" onclick='speakText(${JSON.stringify(consigneText).replace(/'/g,"&#39;")}, this)'>${icon('speaker')}</button>`
+    : '';
   const consigneHtml = state.consigneSeen ? '' : `
     <div class="consigne" id="consigne" role="region" aria-label="Consigne du jeu">
       <div class="consigne-ico" aria-hidden="true">${icon('bulb')}</div>
       <div class="consigne-body">
-        <strong>Consigne</strong>
-        <p>Lis la question, choisis ta réponse, puis lis l'explication : chaque réponse t'apprend un droit. Il n'y a pas de note et tu avances à ton rythme. Utilise « Question suivante » pour continuer, ou « Question précédente » pour revenir en arrière.</p>
+        <div class="consigne-head"><strong>Consigne</strong>${consigneSpeakHtml}</div>
+        <p>${consigneText}</p>
         <button type="button" class="consigne-btn" onclick="dismissConsigne()">${icon('check')} J'ai compris</button>
       </div>
     </div>`;
@@ -1673,6 +1685,7 @@ function renderStation(i, qIdx){
       <div class="station-head-row">
         <div class="station-illustration" style="background:${stationColor(s)};" aria-hidden="true">${icon(stationIllustrations[s.num])}</div>
         <h2 class="station-title" id="station-title" tabindex="-1" data-focus="1">${s.title}</h2>
+        ${prefs.voiceOn ? `<button class="speak-btn" type="button" aria-label="Écouter le titre de l'étape à voix haute" onclick='speakText(${JSON.stringify("Étape " + s.num + " sur " + stations.length + ". " + s.categorie + ". " + s.title + ". Question " + (qIdx+1) + " sur " + s.questions.length + ".").replace(/'/g,"&#39;")}, this)'>${icon('speaker')}</button>` : ''}
       </div>
       <div class="station-eyebrow">
         <span class="q-progress">Question ${qIdx+1} / ${s.questions.length}</span>
@@ -1902,6 +1915,7 @@ function renderFinal(){
       <h2 tabindex="-1" data-focus="1">Parcours terminé !</h2>
       <div class="score-line">${stationsDone} / ${stations.length} étapes · ${qDone} / ${totalQuestions()} questions complétées</div>
       ${badgesStripHtml()}
+      ${prefs.voiceOn ? `<button class="speak-btn labeled intro-speak-btn" type="button" aria-label="Écouter le passeport des droits à voix haute" onclick='speakText(${JSON.stringify(rightsRecap.map(r => r.title + ". " + r.txt).join(" ")).replace(/'/g,"&#39;")}, this)'>${icon('speaker')} <span>Écouter le passeport des droits</span></button>` : ''}
       <div class="rights-list">${items}</div>
       <div class="cert-box">
         <div class="label cert-label">${icon('medal')} Ton certificat personnalisé</div>
