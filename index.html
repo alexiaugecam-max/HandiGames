@@ -530,7 +530,10 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
 
 /* chaque carte porte une bande colorée à gauche + un fond très légèrement teinté
    pour gagner du poids visuel propre, distinct des autres cartes du parcours */
-.chapter-grid{ scroll-margin-top: 88px; }
+#chapter-grid{ scroll-margin-top: 88px; }
+.chapter-grid-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.6rem; margin:0 0 0.8rem; }
+.chapter-grid-label{ font-weight:800; font-family:var(--font-display); font-size:1.05em; display:flex; align-items:center; gap:0.4rem; }
+.chapter-grid-label .ico-svg{ width:1.1em; height:1.1em; color:var(--accent-coral); }
 .chapter-card{
   position:relative; overflow:hidden;
   background:var(--surface-card); border:3px solid var(--surface-border); border-radius:var(--radius-lg);
@@ -1519,6 +1522,14 @@ function renderEntry(){
         <div class="ccount">${stCount} étape${stCount>1?'s':''} · ${qCount} questions${chapDone ? '<span class="ccheck">' + icon('check') + ' Terminé</span>' : ''}</div>
       </button>`;
   }).join('');
+  const chaptersSpoken = chapters.map((c, idx) => {
+    const range = c.stationRange;
+    const stCount = range[1] - range[0] + 1;
+    const qCount = stations.slice(range[0], range[1]+1).reduce((a,s)=>a+s.questions.length,0);
+    const stationIdxs = Array.from({length:stCount}, (_,k)=>range[0]+k);
+    const chapDone = stationIdxs.every(idx2 => state.done[idx2]);
+    return `Chapitre ${idx+1} : ${c.title}. Étapes ${range[0]+1} à ${range[1]+1}. ${stCount} étape${stCount>1?'s':''}, ${qCount} questions. ${chapDone ? 'Déjà terminé.' : 'Pas encore commencé ou en cours.'}`;
+  }).join(' ');
 
   return `
     <div class="entry-wrap">
@@ -1537,7 +1548,13 @@ function renderEntry(){
       ${progressHtml}
       ${doneBanner}
       ${badgesHtml}
-      <div class="chapter-grid" id="chapter-grid">${cards}</div>
+      <div id="chapter-grid">
+        <div class="chapter-grid-head">
+          <span class="chapter-grid-label">${icon('flag')} Les chapitres</span>
+          ${prefs.voiceOn ? `<button class="speak-btn labeled" type="button" aria-label="Écouter la liste des chapitres à voix haute" onclick='speakText(${JSON.stringify(chaptersSpoken).replace(/'/g,"&#39;")}, this)'>${icon('speaker')} <span>Écouter les chapitres</span></button>` : ''}
+        </div>
+        <div class="chapter-grid">${cards}</div>
+      </div>
       <p class="entry-hint">${icon('bulb')} Astuce animateur : chaque équipe peut démarrer où elle veut, l'appli affiche ce qui est déjà validé pendant la partie.</p>
     </div>
   `;
