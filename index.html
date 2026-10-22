@@ -393,6 +393,7 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
 .opt-btn.wrong .opt-mark{ color:var(--fb-warn-ink); }
 .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 .fb-title{ display:flex; align-items:center; gap:0.5rem; font-family:var(--font-display); font-weight:700; font-size:1.05em; margin-bottom:0.5rem; }
+.fb-title .speak-btn{ margin-left:auto; flex-shrink:0; }
 .fb-title .ico-svg{ width:1.4em; height:1.4em; }
 .feedback.good .fb-title .ico-svg{ color:var(--fb-good-ink); }
 .feedback.bad .fb-title .ico-svg{ color:var(--fb-warn-ink); }
@@ -525,6 +526,7 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
 
 /* chaque carte porte une bande colorée à gauche + un fond très légèrement teinté
    pour gagner du poids visuel propre, distinct des autres cartes du parcours */
+.chapter-grid{ scroll-margin-top: 88px; }
 .chapter-card{
   position:relative; overflow:hidden;
   background:var(--surface-card); border:3px solid var(--surface-border); border-radius:var(--radius-lg);
@@ -1358,6 +1360,14 @@ function speakText(text, btnEl){
   window.speechSynthesis.speak(utter);
 }
 
+function feedbackSpeakBtn(text){
+  if(!prefs.voiceOn) return '';
+  return `<button class="speak-btn" type="button" aria-label="Écouter l'explication à voix haute" onclick='speakText(${JSON.stringify(text).replace(/'/g,"&#39;")}, this)'>${icon('speaker')}</button>`;
+}
+function feedbackSpokenText(introText, q){
+  return introText + ' ' + q.explication + ' Ton droit ici : ' + q.droit;
+}
+
 /* ===================== RENDU ===================== */
 
 function renderLock(errorMsg){
@@ -1409,7 +1419,18 @@ function focusAfterRender(){
   if(key === lastFocusKey) return;
   lastFocusKey = key;
   const target = document.querySelector('#main [data-focus]');
-  if(target){ target.focus(); window.scrollTo({ top:0 }); }
+  if(!target) return;
+  target.focus({ preventScroll: true });
+  /* En revenant à l'écran des chapitres après en avoir déjà terminé un,
+     on va directement à la grille des chapitres (le prochain à jouer)
+     plutôt qu'en haut de page : sinon, sur mobile, il faut re-descendre
+     à chaque fois pour retrouver le chapitre suivant. */
+  const grid = state.screen === 'entry' ? document.getElementById('chapter-grid') : null;
+  if(grid && Object.keys(state.progress).length > 0){
+    grid.scrollIntoView({ block:'start' });
+  } else {
+    window.scrollTo({ top:0 });
+  }
 }
 function render(recordHistory){
   renderView();
@@ -1511,7 +1532,7 @@ function renderEntry(){
       ${progressHtml}
       ${doneBanner}
       ${badgesHtml}
-      <div class="chapter-grid">${cards}</div>
+      <div class="chapter-grid" id="chapter-grid">${cards}</div>
       <p class="entry-hint">${icon('bulb')} Astuce animateur : chaque équipe peut démarrer où elle veut, l'appli affiche ce qui est déjà validé pendant la partie.</p>
     </div>
   `;
@@ -1589,7 +1610,7 @@ function renderStation(i, qIdx){
     `;
     if(alreadyAnswered){
       feedbackCls = 'show neutral';
-      feedbackContent = `<div class="fb-title">${icon('chat')} <span>À retenir</span></div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
+      feedbackContent = `<div class="fb-title"><span>${icon('chat')} À retenir</span>${feedbackSpeakBtn(feedbackSpokenText('À retenir.', q))}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
     }
   } else {
     const optClass = q.format === 'vf' ? 'options vf-row' : 'options';
@@ -1623,7 +1644,8 @@ function renderStation(i, qIdx){
       const title = correct
         ? icon('checkCircle') + ' <span>Bonne réponse !</span>'
         : icon('xCircle') + ' <span>Pas tout à fait</span>';
-      feedbackContent = `<div class="fb-title">${title}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
+      const introSpoken = correct ? 'Bonne réponse !' : 'Pas tout à fait.';
+      feedbackContent = `<div class="fb-title"><span>${title}</span>${feedbackSpeakBtn(feedbackSpokenText(introSpoken, q))}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
     }
   }
 
@@ -1737,7 +1759,7 @@ function revealDebate(i, qIdx){
   if(revealBtn) revealBtn.style.display = 'none';
   const fb = document.getElementById('feedback');
   fb.classList.add('show','neutral');
-  fb.innerHTML = `<div class="fb-title">${icon('chat')} <span>À retenir</span></div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
+  fb.innerHTML = `<div class="fb-title"><span>${icon('chat')} À retenir</span>${feedbackSpeakBtn(feedbackSpokenText('À retenir.', q))}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
   markQuestionDone(i, qIdx, true);
   refreshNextButtonLabel(i, qIdx);
   document.getElementById('next-btn').classList.add('show');
@@ -1779,7 +1801,8 @@ function answer(stationIdx, qIdx, choiceIdx){
   const title = correct
     ? icon('checkCircle') + ' <span>Bonne réponse !</span>'
     : icon('xCircle') + ' <span>Pas tout à fait</span>';
-  fb.innerHTML = `<div class="fb-title">${title}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
+  const introSpoken = correct ? 'Bonne réponse !' : 'Pas tout à fait.';
+  fb.innerHTML = `<div class="fb-title"><span>${title}</span>${feedbackSpeakBtn(feedbackSpokenText(introSpoken, q))}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
 
   markQuestionDone(stationIdx, qIdx, correct);
   refreshNextButtonLabel(stationIdx, qIdx);
