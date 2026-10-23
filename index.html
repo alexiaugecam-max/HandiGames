@@ -488,6 +488,13 @@ main{ flex:1; max-width:760px; width:100%; margin:0 auto; padding:1.1rem 1rem 3r
   font-size:0.95em; font-weight:600; color:var(--text-secondary); margin:0 0 1.1rem; text-align:left;
 }
 .entry-cartouche p.lede-definition .ico-svg{ width:19px; height:19px; flex-shrink:0; margin-top:0.1rem; color:var(--accent-teal-strong); }
+.entry-cartouche p.lede-access{
+  display:flex; align-items:flex-start; gap:0.6rem;
+  background:color-mix(in srgb, var(--accent-violet) 12%, var(--surface-card)); border-left:4px solid var(--accent-violet-strong);
+  border-radius:0 var(--radius-md) var(--radius-md) 0; padding:0.8rem 1rem;
+  font-size:0.95em; font-weight:600; color:var(--text-secondary); margin:0 0 1.1rem; text-align:left;
+}
+.entry-cartouche p.lede-access .ico-svg{ width:19px; height:19px; flex-shrink:0; margin-top:0.1rem; color:var(--accent-violet-strong); }
 .entry-cartouche p.lede{ text-align:left; max-width:none; margin:0 0 0.9rem; }
 .entry-cartouche p.lede:last-of-type{ margin-bottom:0; }
 .entry-cartouche p.lede-cta{
@@ -1046,7 +1053,7 @@ const stations = [
         droit:"Tu peux anticiper la démarche avant même d'avoir besoin de l'activer concrètement." },
       { format:"debat", question:"Certain·es jeunes pensent que demander la RQTH trop tôt, c'est s'enfermer dans une case pour la vie. Et toi, qu'en penses-tu ?",
         prompt:"Discutez 2 minutes en équipe : qu'est-ce qui vous semble vrai ou faux dans cette affirmation ?",
-        explication:"La RQTH est attribuée pour une durée limitée (en général 1 à 10 ans), renouvelable ou non. Ce n'est pas une case permanente, mais un statut administratif réversible.",
+        explication:"La RQTH est attribuée pour une durée limitée (en général 1 à 10 ans), renouvelable ou non \u2014 mais de plus en plus souvent, elle peut aussi être accordée sans limite de durée quand la situation n'est pas susceptible d'évoluer. Ce n'est pas une case figée pour toujours : c'est un statut administratif qui peut évoluer avec ta situation.",
         droit:"Tu gardes le contrôle : tu peux ne pas renouveler, ne jamais l'utiliser auprès d'un employeur, ou l'activer seulement quand tu en as besoin." }
     ]
   },
@@ -1211,7 +1218,7 @@ const debriefOpening = [
 
 const debriefDebates = [
   { station:"Étape 3", color:"var(--accent-coral)", title:"\"S'enfermer dans une case pour la vie ?\"",
-    angle:"Beaucoup pensent que la RQTH est définitive. Rappeler qu'elle est temporaire (1 à 10 ans), renouvelable ou non, et que c'est toujours le jeune qui décide de l'activer ou non." },
+    angle:"Beaucoup pensent que la RQTH est définitive. Rappeler qu'elle est le plus souvent temporaire (1 à 10 ans), renouvelable ou non \u2014 mais préciser aussi qu'elle peut de plus en plus être accordée sans limite de durée quand la situation n'évoluera pas, et que c'est toujours le jeune qui décide de l'activer ou non." },
   { station:"Étape 7", color:"var(--accent-teal)", title:"\"Mentionner son handicap sur un dossier d'admission, un risque ?\"",
     angle:"Faire émerger la peur de la discrimination (réelle, mais illégale) vs. l'intérêt concret de le signaler en amont (accompagnement, aménagements). Demander : \"Qu'est-ce qui vous ferait hésiter, vous ?\"" },
   { station:"Étape 10", color:"var(--accent-violet)", title:"\"Le dire en entretien d'embauche, c'est risqué ?\"",
@@ -1373,6 +1380,18 @@ function feedbackSpeakBtn(text){
 }
 function feedbackSpokenText(introText, q){
   return introText + ' ' + q.explication + ' Ton droit ici : ' + q.droit;
+}
+
+/* Statistiques anonymes et agrégées (RGPD) : un simple compteur par
+   question/réponse dans GoatCounter (déjà utilisé pour les visites).
+   Aucune donnée n'est reliée à une personne, un appareil ou une session :
+   seul le total par case monte, consultable sur handigames.goatcounter.com. */
+function trackAnswerStat(path, title){
+  try{
+    if(window.goatcounter && typeof window.goatcounter.count === 'function'){
+      window.goatcounter.count({ path: path, title: title, event: true });
+    }
+  }catch(e){ /* silencieux : la stat ne doit jamais bloquer le jeu */ }
 }
 
 /* ===================== RENDU ===================== */
@@ -1543,6 +1562,7 @@ function renderEntry(){
         <p class="lede">Pars à la découverte de tes droits à travers 6 chapitres et 12 étapes ! À chaque étape, de nouvelles questions t'attendent pour tester tes connaissances, découvrir des informations surprenantes et avancer dans ton aventure.</p>
         <p class="lede">Choisis ton chapitre, explore les étapes et progresse à ton rythme grâce aux boutons « Suivant » et « Précédent ».</p>
         <p class="lede">Ici, pas de chrono, pas de note et pas de pression ! Chaque réponse est une occasion d'apprendre.</p>
+        <p class="lede-access">${icon('gear')}<span>Avant de commencer : l'icône <strong>\u2699</strong> en haut de l'écran te permet de changer la police, la taille du texte, le thème et d'activer la lecture vocale des questions.</span></p>
         <p class="lede-cta">${icon('flag')} À toi de jouer : termine les 12 étapes pour débloquer ton certificat et tous tes badges !</p>
       </div>
       ${progressHtml}
@@ -1674,7 +1694,7 @@ function renderStation(i, qIdx){
     }
   }
 
-  const consigneText = "Lis la question, choisis ta réponse, puis lis l'explication : chaque réponse t'apprend un droit. Il n'y a pas de note et tu avances à ton rythme. Utilise « Question suivante » pour continuer, ou « Question précédente » pour revenir en arrière.";
+  const consigneText = "Lis la question, choisis ta réponse, puis lis l'explication : chaque réponse t'apprend un droit. Il n'y a pas de note et tu avances à ton rythme. Utilise « Question suivante » pour continuer, ou « Question précédente » pour revenir en arrière. Astuce : l'icône \u2699 en haut de l'écran permet de changer la police, la taille du texte, le thème et d'activer la lecture vocale.";
   const consigneSpeakHtml = prefs.voiceOn
     ? `<button class="speak-btn" type="button" aria-label="Écouter la consigne à voix haute" onclick='speakText(${JSON.stringify(consigneText).replace(/'/g,"&#39;")}, this)'>${icon('speaker')}</button>`
     : '';
@@ -1790,6 +1810,7 @@ function revealDebate(i, qIdx){
   const fb = document.getElementById('feedback');
   fb.classList.add('show','neutral');
   fb.innerHTML = `<div class="fb-title"><span>${icon('chat')} À retenir</span>${feedbackSpeakBtn(feedbackSpokenText('À retenir.', q))}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
+  trackAnswerStat('debat-' + i + '-' + qIdx + '-vu', 'Débat vu — étape ' + (i+1) + ' Q' + (qIdx+1));
   markQuestionDone(i, qIdx, true);
   refreshNextButtonLabel(i, qIdx);
   document.getElementById('next-btn').classList.add('show');
@@ -1833,6 +1854,7 @@ function answer(stationIdx, qIdx, choiceIdx){
     : icon('xCircle') + ' <span>Pas tout à fait</span>';
   const introSpoken = correct ? 'Bonne réponse !' : 'Pas tout à fait.';
   fb.innerHTML = `<div class="fb-title"><span>${title}</span>${feedbackSpeakBtn(feedbackSpokenText(introSpoken, q))}</div>${q.explication}<div class="right-info"><strong>Ton droit ici&nbsp;:</strong> ${q.droit}</div>`;
+  trackAnswerStat('rep-' + stationIdx + '-' + qIdx + '-opt' + choiceIdx, 'Étape ' + (stationIdx+1) + ' Q' + (qIdx+1) + ' — option ' + (choiceIdx+1) + (correct ? ' (bonne réponse)' : ' (mauvaise réponse)'));
 
   markQuestionDone(stationIdx, qIdx, correct);
   refreshNextButtonLabel(stationIdx, qIdx);
